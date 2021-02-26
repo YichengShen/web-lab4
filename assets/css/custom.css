@@ -1,0 +1,20 @@
+.bg-custom {
+    opacity: 0.6;
+}
+
+.bg-poster {
+    background-color: rgb(20, 36, 255) !important;
+}
+
+.bg-paper {
+    background-color: green !important;
+}
+
+.bg-research {
+    background-color: rgb(150, 52, 249) !important;
+}
+
+.border-custom {
+    color: #0e59af;
+    border-color: #0e59af !important;
+}
