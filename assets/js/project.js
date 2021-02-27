@@ -1,64 +1,64 @@
-function render_project_page(data) {
-    document.body.innerHTML = `
-        ${render_project_header(data)}
-        ${render_project_navbar()}
-        ${render_project_details(data)}
-        ${render_footer()}
-    `;
-}
+import utils from './utils.js';
+import render_material_icon from './material_icon.js';
 
-function render_project_header(data) {
+export default function render_projects(data) {
     return `
-        <header class="name-header text-white text-decoration-none">
-            <div class="container text-center">
-                <h1>${data.title}</h1>
-            </div>
-        </header>
-    `;
-}
+    <div id="projects" class="col-sm-8 anchor">
+        <header>Projects</header>
 
-function render_project_navbar() {
-    return `
-    <nav class="sticky-top mb-2">
-        <ul class="nav nav-fill nav-menu">
-            <a class="nav-link href-item center-underline" href="index.html">Return to main page</a>
-        </ul>
-    </nav>
-    `;
-}
+        <span class="btn-group mb-3" role="group" aria-label="Basic radio toggle button group">
 
-function render_project_details(data) {
-    return `
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-10 mx-auto" id="content-col">
-                <h5><u>Time</u></h5>
-                <p class="fw-light">${data.date}</p>
-                <h5><u>Description</u></h5>
-                <p class="fw-light">${data.details}</p>
+            <input type="radio" class="btn-check" name="category" id="All" value="all" autocomplete="off" checked>
+            <label class="btn btn-outline-dark" for="All">All</label>
 
-                ${data.documents.map(d => `
-                    <span>
-                        <a href="${d.link}" class="href-item text-decoration-none center-underline" target="_blank">
-                        ${render_material_icon(d.type)} ${cap_first_letter(d.type)}
-                        </a>
-                    </span>
-                `).join('')}
+            <input type="radio" class="btn-check" name="category" id="Software" value="software" autocomplete="off">
+            <label class="btn btn-outline-dark" for="Software">Software</label>
 
-                <div class="mt-3">
-                    ${render_project_images(data.images)}
-                </div>
-            </div>
-        </div>
+            <input type="radio" class="btn-check" name="category" id="ML" value="ml" autocomplete="off">
+            <label class="btn btn-outline-dark" for="ML">ML</label>
+
+            <input type="radio" class="btn-check" name="category" id="NLP" value="nlp" autocomplete="off">
+            <label class="btn btn-outline-dark" for="NLP">NLP</label>
+        </span>
+
+        <span class="project-list">
+            ${render_project_items(data)}
+        <span>
     </div>
-    `
+    `;
 }
 
-function render_project_images(images) {
-    return images.map(d => `
-        <div class="mt-2">
-            <h5><u>${d.img_name}<u></h5>
-            <img src="${d.img}" class="img-fluid mb-4 mx-auto d-block" alt="login">
+function render_project_items(data) {
+    return data.map(d => `
+        <div class="sub-item">
+            <h5 class="fw-bold">
+                <a href="?project=${d.id}" class="href-item text-decoration-none center-underline">${d.title}</a>
+            </h5>
+            <p class="fw-lighter">${d.date}</p>
+            <p class="fw-light">${d.abstract}</p>
+            ${d.documents.map(m => `
+                <span>
+                    <a href="${m.link}" class="href-item text-decoration-none center-underline" target="_blank">
+                    ${render_material_icon(m.type)} ${utils.cap_first_letter(m.type)}
+                    </a>
+                </span>
+            `).join('')}
         </div>
     `).join('');
+}
+
+export function add_filter_projects(projects) {
+    let buttons = document.querySelectorAll('input[name="category"]');
+    buttons.forEach(cond => cond.addEventListener('change', function(event){
+        let keyword = event.target.value;
+        let projects_filtered;
+        if (keyword === 'all') {
+            projects_filtered = projects;
+        } else {
+            projects_filtered = projects.filter(p => {
+                return p.category.includes(keyword)
+            });
+        }
+        document.querySelector('.project-list').innerHTML = render_project_items(projects_filtered);
+    }));
 }
